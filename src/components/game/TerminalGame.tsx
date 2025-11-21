@@ -10,6 +10,7 @@ export default function TerminalGame() {
     const [isWaiting, setIsWaiting] = useState(false);
     const resolveInputRef = useRef<((value: string) => void) | null>(null);
     const bottomRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
     const gameRef = useRef<LegacyLemonadeStand | null>(null);
     const initializedRef = useRef(false);
 
@@ -17,6 +18,16 @@ export default function TerminalGame() {
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [lines]);
+
+    // Auto-focus input when waiting
+    useEffect(() => {
+        if (isWaiting) {
+            // Small timeout to ensure DOM is ready and disabled attribute is removed
+            setTimeout(() => {
+                inputRef.current?.focus();
+            }, 10);
+        }
+    }, [isWaiting]);
 
     // Initialize game
     useEffect(() => {
@@ -85,6 +96,7 @@ export default function TerminalGame() {
             <form onSubmit={handleSubmit} className="mt-4 flex gap-2 border-t border-green-900 pt-2">
                 <span className="text-green-500 animate-pulse">{'>'}</span>
                 <input
+                    ref={inputRef}
                     type="text"
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
